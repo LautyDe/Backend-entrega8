@@ -5,16 +5,17 @@ const { Server: IOServer } = require("socket.io");
 const bp = require("body-parser");
 const routers = require("./public/routers");
 const handlebars = require("express-handlebars");
-const Contenedor = require("./controllers/controller");
+const Contenedor = require("./controllers/SQLController");
+const options = require("./controllers/options");
 const moment = require("moment/moment");
-const productos = new Contenedor("./controllers/productos.json");
+const productos = new Contenedor(options.mysql, "productos");
+const messages = new Contenedor(options.sqlite3, "mensajes");
 
 /* Inicializacion de la configuracion */
 const app = express();
 const httpServer = new HttpServer(app);
 const io = new IOServer(httpServer);
 const PORT = 8080;
-const messages = new Contenedor("./controllers/mensajes.json");
 
 /* middlewares incorporados */
 app.use(bp.json());
