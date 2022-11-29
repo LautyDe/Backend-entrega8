@@ -1,0 +1,43 @@
+<a href="/">Ir al chat</a>
+<h1>Agregar producto:</h1>
+<form action="/" method="post">
+    <label for="title">Nombre del producto:</label>
+    <input type="text" id="title" name="title" />
+    <label for="price">Precio del producto:</label>
+    <input type="text" id="price" name="price" />
+    <label for="thumbnail">Imagen del producto:</label>
+    <input type="text" id="thumbnail" name="thumbnail" />
+    <input type="submit" value="Enviar" />
+</form>
+
+<h2>Productos</h2>
+{{#if productos.length}}
+    <table>
+        <tr>
+            <th>Nombre</th>
+            <th>Precio</th>
+            <th>Imagen</th>
+        </tr>
+        {{#each productos}}
+            <tr>
+                <td>{{title}}</td>
+                <td>{{price}}</td>
+                <td><img
+                        class="img"
+                        src="{{thumbnail}}"
+                        alt="imagen del producto"
+                    /></td>
+            </tr>
+        {{/each}}
+    </table>
+{{else}}
+    <h3>No hay productos agregados!</h3>
+{{/if}}
+
+<h2>Chat</h2>
+<form onsubmit="return addMessage(this)">
+    <input type="email" id="email" placeholder="Ingrese su email" />
+    <input type="text" id="text" placeholder="Ingrese su mensaje" />
+    <input type="submit" value="Enviar" />
+</form>
+<div id="messages"></div>
