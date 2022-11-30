@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const router = Router();
-const Contenedor = require("./controllers/SQLController");
-const options = require("./controllers/options");
+const Contenedor = require("./controllers/SQLController.js");
+const options = require("./controllers/options.js");
 const productos = new Contenedor(options.mysql, "productos");
 const notFound = { error: "Producto no encontrado" };
 

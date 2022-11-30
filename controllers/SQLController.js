@@ -8,7 +8,17 @@ class Contenedor {
 
     async save(objeto) {
         try {
-            await this.connection(this.table).insert(objeto);
+            const exists = await this.connection.schema.hasTable(this.table);
+            if (!exists) {
+                await this.connection.schema.createTable(this.table, table => {
+                    table.string("id").notNullable();
+                    table.string("title").notNullable();
+                    table.float("price");
+                    table.string("thumbnail").notNullable();
+                });
+            } else {
+                await this.connection(this.table).insert(objeto);
+            }
         } catch (error) {
             console.log(`Error agregando objeto a la tabla: ${error.message}`);
         }
