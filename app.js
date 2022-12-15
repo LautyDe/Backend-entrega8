@@ -21,7 +21,7 @@ const handlebars = require("express-handlebars");
 const moment = require("moment/moment");
 const Contenedor = require("./controllers/SQLController.js");
 const productos = new Contenedor(options.mysql, "productos");
-const messages = new Contenedor(options.sqlite3, "mensajes");
+const mensajes = new Contenedor(options.sqlite3, "mensajes");
 
 /* middlewares incorporados */
 app.use(bp.json());
@@ -49,27 +49,39 @@ app.get("/", (req, res) => {
     });
 });
 
-connectionMySql.schema.hasTable("productos").then(exists => {
-    if (!exists) {
-        connectionMySql.schema.createTable("productos", table => {
-            table.increments("id").primary;
-            table.string("title", 25).notNullable();
-            table.float("price");
-            table.string("thumbnail", 100);
-        });
-    }
-});
+connectionMySql.schema
+    .hasTable("productos")
+    .then(exists => {
+        if (exists) {
+            connectionMySql.schema
+                .createTable("productos", table => {
+                    table.increments("id").primary;
+                    table.string("title", 25).notNullable();
+                    table.float("price");
+                    table.string("thumbnail", 100);
+                })
+                .then(() => console.log("Tabla creada con exito!"))
+                .catch(error => console.log(error));
+        }
+    })
+    .catch(error => console.log(error));
 
-connectionSqlite3.schema.hasTable("messages").then(exists => {
-    if (!exists) {
-        connectionMySql.schema.createTable("productos", table => {
-            table.increments("id").primary;
-            table.string("email", 40).notNullable();
-            table.string("message", 100).notNullable();
-            table.string("date", 100).notNullable();
-        });
-    }
-});
+connectionSqlite3.schema
+    .hasTable("mensajes")
+    .then(exists => {
+        if (!exists) {
+            connectionMySql.schema
+                .createTable("productos", table => {
+                    table.increments("id").primary;
+                    table.string("email", 40).notNullable();
+                    table.string("mensaje", 100).notNullable();
+                    table.string("date", 100).notNullable();
+                })
+                .then(() => console.log("Tabla creada con exito!"))
+                .catch(error => console.log(error));
+        }
+    })
+    .catch(error => console.log(error));
 
 app.post("/", async (req, res) => {
     const data = req.body;
@@ -98,13 +110,13 @@ io.on("connection", async socket => {
     });
 
     /* cargar todos los mensajes a la primera conexion */
-    const listaMensajes = await messages.getAll();
-    socket.emit("messages", listaMensajes);
-    socket.emit("messages", messages);
+    const listaMensajes = await mensajes.getAll();
+    socket.emit("mensaje", listaMensajes);
+    socket.emit("mensaje", mensajes);
 
-    socket.on("new-message", async data => {
+    socket.on("nuevo-mensaje", async data => {
         data.time = moment(new Date()).format("DD/MM/YYYY hh:mm:ss");
-        await messages.save(data);
-        io.sockets.emit("messages", messages);
+        await mensajes.save(data);
+        io.sockets.emit("mensajes", mensajes);
     });
 });
