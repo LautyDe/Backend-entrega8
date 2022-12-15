@@ -42,6 +42,21 @@ app.set("view engine", "hbs");
 app.use("/", routers);
 app.use(express.static("public"));
 
+const mensajes = [
+    {
+        id: 1,
+        email: "lauty.d.p@gmail.com",
+        text: "Hola buenas tardes!",
+        time: "16/11/2022 07:50:49",
+    },
+    {
+        id: 2,
+        email: "juanGarcia@gmail.com",
+        text: "Como estas??",
+        time: "16/11/2022 07:51:11",
+    },
+];
+
 app.get("/", (req, res) => {
     res.render("welcome", {
         style: "welcome.css",
@@ -53,6 +68,7 @@ connectionMySql.schema
     .hasTable("products")
     .then(exists => {
         if (!exists) {
+            /* Si no existe, creo la table */
             connectionMySql.schema
                 .createTable("products", table => {
                     table.increments("id").primary;
@@ -62,32 +78,67 @@ connectionMySql.schema
                 })
                 .then(() => console.log("Tabla creada con exito!"))
                 .catch(error => console.log(error));
+        } else {
+            /* Si existe, la elimino y la vuelvo a crear */
+            connectionMySql.schema.dropTable("products").then(
+                connectionMySql.schema
+                    .createTable("products", table => {
+                        table.increments("id").primary;
+                        table.string("title", 25).notNullable();
+                        table.float("price");
+                        table.string("thumbnail", 100);
+                    })
+                    .then(() => console.log("Tabla creada con exito!"))
+                    .catch(error => console.log(error))
+            );
         }
     })
     .catch(error => console.log(error));
+
+(async () => {
+    try {
+        messages.saveSqlite3(mensajes);
+    } catch (error) {
+        console.log(error);
+    }
+})();
 
 connectionSqlite3.schema
     .hasTable("messages")
     .then(exists => {
         if (!exists) {
-            connectionMySql.schema
+            /* Si no existe, creo la table */
+            connectionSqlite3.schema
                 .createTable("messages", table => {
                     table.increments("id").primary;
                     table.string("email", 40).notNullable();
-                    table.string("message", 100).notNullable();
-                    table.string("date", 100).notNullable();
+                    table.string("text", 100).notNullable();
+                    table.string("time", 100).notNullable();
                 })
                 .then(() => console.log("Tabla creada con exito!"))
                 .catch(error => console.log(error));
+        } else {
+            /* Si existe, la elimino y la vuelvo a crear */
+            connectionSqlite3.schema.dropTable("messages").then(
+                connectionSqlite3.schema
+                    .createTable("messages", table => {
+                        table.increments("id").primary;
+                        table.string("email", 40).notNullable();
+                        table.string("text", 100).notNullable();
+                        table.string("time", 100).notNullable();
+                    })
+                    .then(() => console.log("Tabla creada con exito!"))
+                    .catch(error => console.log(error))
+            );
         }
     })
     .catch(error => console.log(error));
 
 app.post("/", async (req, res) => {
     const data = req.body;
-    const nuevoProducto = await products.saveMySql(data);
+    const nuevoProducto = await products.save(data);
     !data && res.status(204).json(notFound);
-    res.status(201).render("formulario", {});
+    res.status(201);
 });
 
 server.listen(PORT, () => {

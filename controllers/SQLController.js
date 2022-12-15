@@ -16,6 +16,7 @@ class Contenedor {
                     table.float("price");
                     table.string("thumbnail").notNullable();
                 });
+                console.log(`Prueba MySQL productos`);
             } else {
                 await this.connection(this.table).insert(objeto);
             }
@@ -31,8 +32,8 @@ class Contenedor {
                 await this.connection.schema.createTable(this.table, table => {
                     table.increments("id").primary;
                     table.string("email", 40).notNullable();
-                    table.string("mensaje", 100).notNullable();
-                    table.string("date", 100).notNullable();
+                    table.string("text", 100).notNullable();
+                    table.string("time", 100).notNullable();
                 });
             } else {
                 await this.connection(this.table).insert(objeto);

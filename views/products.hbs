@@ -11,14 +11,14 @@
 </form>
 
 <h2>Productos</h2>
-{{#if products.length}}
+{{#if productos.length}}
     <table>
         <tr>
             <th>Nombre</th>
             <th>Precio</th>
             <th>Imagen</th>
         </tr>
-        {{#each product}}
+        {{#each productos}}
             <tr>
                 <td>{{title}}</td>
                 <td>{{price}}</td>
@@ -40,4 +40,4 @@
     <input type="text" id="text" placeholder="Ingrese su mensaje" />
     <input type="submit" value="Enviar" />
 </form>
-<div id="messages"></div>
+<div id="mensajes"></div>
