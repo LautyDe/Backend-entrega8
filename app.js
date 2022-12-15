@@ -1,21 +1,27 @@
 /* Importacion de librerias internas y externas */
 const express = require("express");
-const { Server: HttpServer } = require("http");
-const { Server: IOServer } = require("socket.io");
+const app = express();
+const PORT = 8080;
+
+/* Socket / Http */
+const { Server } = require("socket.io");
+const http = require("http");
+const server = http.createServer(app);
+const io = new Server(server);
+
+/* SQL */
+const options = require("./controllers/options.js");
+const knex = require("knex");
+const connectionMySql = knex(options.mysql);
+const connectionSqlite3 = knex(options.sqlite3);
 const bp = require("body-parser");
 const routers = require("./public/routers");
 const handlebars = require("express-handlebars");
-const Contenedor = require("./controllers/SQLController.js");
-const options = require("./controllers/options.js");
+
 const moment = require("moment/moment");
+const Contenedor = require("./controllers/SQLController.js");
 const productos = new Contenedor(options.mysql, "productos");
 const messages = new Contenedor(options.sqlite3, "mensajes");
-
-/* Inicializacion de la configuracion */
-const app = express();
-const httpServer = new HttpServer(app);
-const io = new IOServer(httpServer);
-const PORT = 8080;
 
 /* middlewares incorporados */
 app.use(bp.json());
@@ -43,22 +49,42 @@ app.get("/", (req, res) => {
     });
 });
 
+connectionMySql.schema.hasTable("productos").then(exists => {
+    if (!exists) {
+        connectionMySql.schema.createTable("productos", table => {
+            table.increments("id").primary;
+            table.string("title", 25).notNullable();
+            table.float("price");
+            table.string("thumbnail", 100);
+        });
+    }
+});
+
+connectionSqlite3.schema.hasTable("messages").then(exists => {
+    if (!exists) {
+        connectionMySql.schema.createTable("productos", table => {
+            table.increments("id").primary;
+            table.string("email", 40).notNullable();
+            table.string("message", 100).notNullable();
+            table.string("date", 100).notNullable();
+        });
+    }
+});
+
 app.post("/", async (req, res) => {
-    console.log(`post req recibida con exito`);
     const data = req.body;
-    console.log(data);
     const nuevoProducto = await productos.save(data);
     !data && res.status(204).json(notFound);
     res.status(201).render("formulario", {});
 });
 
-httpServer.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(
-        `Servidor http escuchando en el puerto ${httpServer.address().port}`
+        `Servidor http escuchando en el puerto ${server.address().port}`
     );
-    console.log(`http://localhost:${httpServer.address().port}`);
+    console.log(`http://localhost:${server.address().port}`);
 });
-httpServer.on("error", error => console.log(`Error en servidor: ${error}`));
+server.on("error", error => console.log(`Error en servidor: ${error}`));
 
 io.on("connection", async socket => {
     console.log("Nuevo cliente conectado");
