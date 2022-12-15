@@ -20,8 +20,8 @@ const handlebars = require("express-handlebars");
 
 const moment = require("moment/moment");
 const Contenedor = require("./controllers/SQLController.js");
-const productos = new Contenedor(options.mysql, "productos");
-const mensajes = new Contenedor(options.sqlite3, "mensajes");
+const products = new Contenedor(options.mysql, "products");
+const messages = new Contenedor(options.sqlite3, "messages");
 
 /* middlewares incorporados */
 app.use(bp.json());
@@ -50,11 +50,11 @@ app.get("/", (req, res) => {
 });
 
 connectionMySql.schema
-    .hasTable("productos")
+    .hasTable("products")
     .then(exists => {
-        if (exists) {
+        if (!exists) {
             connectionMySql.schema
-                .createTable("productos", table => {
+                .createTable("products", table => {
                     table.increments("id").primary;
                     table.string("title", 25).notNullable();
                     table.float("price");
@@ -67,14 +67,14 @@ connectionMySql.schema
     .catch(error => console.log(error));
 
 connectionSqlite3.schema
-    .hasTable("mensajes")
+    .hasTable("messages")
     .then(exists => {
         if (!exists) {
             connectionMySql.schema
-                .createTable("productos", table => {
+                .createTable("messages", table => {
                     table.increments("id").primary;
                     table.string("email", 40).notNullable();
-                    table.string("mensaje", 100).notNullable();
+                    table.string("message", 100).notNullable();
                     table.string("date", 100).notNullable();
                 })
                 .then(() => console.log("Tabla creada con exito!"))
@@ -85,7 +85,7 @@ connectionSqlite3.schema
 
 app.post("/", async (req, res) => {
     const data = req.body;
-    const nuevoProducto = await productos.save(data);
+    const nuevoProducto = await products.saveMySql(data);
     !data && res.status(204).json(notFound);
     res.status(201).render("formulario", {});
 });
@@ -102,21 +102,21 @@ io.on("connection", async socket => {
     console.log("Nuevo cliente conectado");
 
     /* cargar los productos */
-    const listaProductos = await productos.getAll();
+    const listaProductos = await products.getAll();
     socket.emit("new-connection", listaProductos);
-    socket.on("new-product", data => {
-        productos.save(data);
-        io.sockets.emit("producto", data);
+    socket.on("new-product", async data => {
+        await products.saveMySql(data);
+        io.sockets.emit("product", data);
     });
 
     /* cargar todos los mensajes a la primera conexion */
-    const listaMensajes = await mensajes.getAll();
-    socket.emit("mensaje", listaMensajes);
-    socket.emit("mensaje", mensajes);
+    const listaMensajes = await messages.getAll();
+    socket.emit("message", listaMensajes);
+    socket.emit("message", messages);
 
-    socket.on("nuevo-mensaje", async data => {
+    socket.on("new-message", async data => {
         data.time = moment(new Date()).format("DD/MM/YYYY hh:mm:ss");
-        await mensajes.save(data);
-        io.sockets.emit("mensajes", mensajes);
+        await messages.saveSqlite3(data);
+        io.sockets.emit("messages", messages);
     });
 });
