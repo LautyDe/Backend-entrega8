@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const router = Router();
-const Contenedor = require("../../controllers/controller.js");
+const Contenedor = require("../../controllers/SQLcontroller.js");
 const products = new Contenedor("controllers/productos.json");
 const notFound = { error: "Producto no encontrado" };
 
