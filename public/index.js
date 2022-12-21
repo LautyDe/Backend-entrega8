@@ -10,24 +10,24 @@ function render(data) {
         </div>`;
         })
         .join(" ");
-    document.getElementById("mensajes").innerHTML = html;
+    document.getElementById("messages").innerHTML = html;
 }
 
-socket.on("mensajes", data => {
+socket.on("messages", data => {
     render(data);
 });
 
 function addMessage(e) {
-    const mensaje = {
+    const message = {
         email: document.getElementById("email").value,
         text: document.getElementById("text").value,
     };
-    if (!mensaje.email) {
+    if (!message.email) {
         alert(
             "Por favor, introduzca un email para mandar un mensaje en el chat"
         );
     } else {
-        socket.emit("nuevo-mensaje", mensaje);
+        socket.emit("new-message", message);
     }
 
     return false;
