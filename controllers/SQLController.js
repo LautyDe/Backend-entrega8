@@ -6,38 +6,9 @@ class Contenedor {
         this.table = table;
     }
 
-    async saveMySql(objeto) {
+    async save(objeto) {
         try {
-            const exists = await this.connection.schema.hasTable(this.table);
-            if (!exists) {
-                await this.connection.schema.createTable(this.table, table => {
-                    table.string("id").notNullable();
-                    table.string("title").notNullable();
-                    table.float("price");
-                    table.string("thumbnail").notNullable();
-                });
-                console.log(`Prueba MySQL productos`);
-            } else {
-                await this.connection(this.table).insert(objeto);
-            }
-        } catch (error) {
-            console.log(`Error agregando objeto a la tabla: ${error.message}`);
-        }
-    }
-
-    async saveSqlite3(objeto) {
-        try {
-            const exists = await this.connection.schema.hasTable(this.table);
-            if (!exists) {
-                await this.connection.schema.createTable(this.table, table => {
-                    table.increments("id").primary;
-                    table.string("email", 40).notNullable();
-                    table.string("text", 100).notNullable();
-                    table.string("time", 100).notNullable();
-                });
-            } else {
-                await this.connection(this.table).insert(objeto);
-            }
+            await this.connection(this.table).insert(objeto);
         } catch (error) {
             console.log(`Error agregando objeto a la tabla: ${error.message}`);
         }
@@ -61,8 +32,7 @@ class Contenedor {
 
     async deleteById(id) {
         try {
-            await this.connection(this.table).where("id", id).del();
-            return id;
+            return await this.connection(this.table).where("id", id).del();
         } catch (error) {
             console.log(
                 `Ocurrio un error eliminando el objeto con el id solicitado: ${error.message}`
