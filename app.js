@@ -49,12 +49,11 @@ app.get("/", (req, res) => {
     });
 });
 
-const mysqlFunc = require("./controllers/connection.js");
-const sqlite3Func = require("./controllers/connection.js");
+const connectionFunctions = require("./controllers/connection.js");
 
 /* Creo tablas de productos y mensajes */
-mysqlFunc();
-sqlite3Func();
+connectionFunctions.mysqlFunc();
+connectionFunctions.sqlite3Func();
 
 app.post("/", async (req, res) => {
     const data = req.body;

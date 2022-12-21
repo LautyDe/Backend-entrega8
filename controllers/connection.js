@@ -5,10 +5,10 @@ const connectionMySql = knex(options.mysql);
 const connectionSqlite3 = knex(options.sqlite3);
 
 const mysqlFunc = () => {
-    connectionMySql.schema.hasTable("productos").then(exists => {
+    connectionMySql.schema.hasTable("products").then(exists => {
         if (!exists) {
             connectionMySql.schema
-                .createTable("productos", table => {
+                .createTable("products", table => {
                     table.increments("id").primary;
                     table.string("title", 25).notNullable();
                     table.float("price");
@@ -21,10 +21,10 @@ const mysqlFunc = () => {
 };
 
 const sqlite3Func = () => {
-    connectionSqlite3.schema.hasTable("mensajes").then(exists => {
+    connectionSqlite3.schema.hasTable("messages").then(exists => {
         if (!exists) {
             connectionSqlite3.schema
-                .createTable("mensajes", table => {
+                .createTable("messages", table => {
                     table.increments("id").primary;
                     table.string("email", 40).notNullable();
                     table.string("message", 100).notNullable();
@@ -36,5 +36,7 @@ const sqlite3Func = () => {
     });
 };
 
-module.exports = mysqlFunc;
-module.exports = sqlite3Func;
+module.exports = {
+    mysqlFunc,
+    sqlite3Func,
+};
