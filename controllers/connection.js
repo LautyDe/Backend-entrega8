@@ -27,7 +27,7 @@ const sqlite3Func = () => {
                 .createTable("messages", table => {
                     table.increments("id").primary;
                     table.string("email", 40).notNullable();
-                    table.string("message", 100).notNullable();
+                    table.string("text", 100).notNullable();
                     table.string("date", 100).notNullable();
                 })
                 .then(() => console.log("Tabla creada con exito"))

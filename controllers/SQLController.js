@@ -1,8 +1,6 @@
-const knex = require("knex");
-
 class Contenedor {
-    constructor(options, table) {
-        this.connection = knex(options);
+    constructor(connection, table) {
+        this.connection = connection;
         this.table = table;
     }
 
@@ -26,7 +24,7 @@ class Contenedor {
         try {
             return await this.connection(this.table);
         } catch (error) {
-            console.log(`Error obteniendo tabla: ${error}`);
+            console.log(`Error obteniendo tabla: ${error.message}`);
         }
     }
 

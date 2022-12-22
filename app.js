@@ -20,8 +20,8 @@ const handlebars = require("express-handlebars");
 
 const moment = require("moment/moment");
 const Contenedor = require("./controllers/SQLController.js");
-const products = new Contenedor(options.mysql, "products");
-const messages = new Contenedor(options.sqlite3, "messages");
+const products = new Contenedor(connectionMySql, "products");
+const messages = new Contenedor(connectionSqlite3, "messages");
 
 /* middlewares incorporados */
 app.use(bp.json());
@@ -81,7 +81,7 @@ io.on("connection", async socket => {
         socket.emit("message", listaMensajes);
 
         socket.on("new-message", async data => {
-            data.time = moment(new Date()).format("DD/MM/YYYY hh:mm:ss");
+            data.date = moment(new Date()).format("DD/MM/YYYY hh:mm:ss");
             await messages.save(data);
 
             const allMessages = await messages.getAll();

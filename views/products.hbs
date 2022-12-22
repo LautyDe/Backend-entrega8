@@ -1,6 +1,6 @@
 <a href="/">Ir al inicio</a>
 <h1>Agregar producto:</h1>
-<form action="/" method="post">
+<form action="/" method="post" onsubmit="return addProduct(this)">
     <label for="title">Nombre del producto:</label>
     <input type="text" id="title" name="title" />
     <label for="price">Precio del producto:</label>
@@ -11,14 +11,14 @@
 </form>
 
 <h2>Productos</h2>
-{{#if productos.length}}
+{{#if products.length}}
     <table>
         <tr>
             <th>Nombre</th>
             <th>Precio</th>
             <th>Imagen</th>
         </tr>
-        {{#each productos}}
+        {{#each products}}
             <tr>
                 <td>{{title}}</td>
                 <td>{{price}}</td>
@@ -35,7 +35,7 @@
 {{/if}}
 
 <h2>Chat</h2>
-<form onsubmit="return addMessage(this)">
+<form onsubmit="return addMessage(this)" id="messagesForm">
     <input type="email" id="email" placeholder="Ingrese su email" />
     <input type="text" id="text" placeholder="Ingrese su mensaje" />
     <input type="submit" value="Enviar" />
