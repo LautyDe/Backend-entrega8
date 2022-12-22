@@ -1,7 +1,12 @@
 const { Router } = require("express");
 const router = Router();
+const options = require("../../controllers/options.js");
+const knex = require("knex");
+const connectionMySql = knex(options.mysql);
+const connectionSqlite3 = knex(options.sqlite3);
 const Contenedor = require("../../controllers/SQLcontroller.js");
-const products = new Contenedor("controllers/productos.json");
+const products = new Contenedor(connectionMySql, "products");
+const messages = new Contenedor(connectionSqlite3, "messages");
 const notFound = { error: "Producto no encontrado" };
 
 /* ok: 200
@@ -15,7 +20,7 @@ const notFound = { error: "Producto no encontrado" };
 router.get("/", async (req, res) => {
     const arrayProductos = await products.getAll();
     res.render("products", {
-        productos: arrayProductos,
+        products: arrayProductos,
         style: "productos.css",
         title: "Productos con Handlebars",
     });

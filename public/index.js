@@ -2,7 +2,7 @@ const socket = io.connect();
 
 function MessagesRender(data) {
     const html = data
-        .map((elem, index) => {
+        .map(elem => {
             return `<div>
         <strong style='color: blue'>${elem.email}</strong>
         [<span style='color: brown'>${elem.date}</span>]:
@@ -13,7 +13,7 @@ function MessagesRender(data) {
     document.getElementById("messages").innerHTML = html;
 }
 
-socket.on("messages", data => {
+socket.on("message", data => {
     MessagesRender(data);
 });
 
